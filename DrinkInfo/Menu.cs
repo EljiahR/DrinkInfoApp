@@ -9,9 +9,9 @@ namespace DrinkInfo
 {
     internal class Menu
     {
-        public static void MainMenu()
+        public static async Task MainMenu()
         {
-            var category = AnsiConsole.Prompt(
+            string category = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Drink Categories")
                     .PageSize(11)
@@ -20,15 +20,16 @@ namespace DrinkInfo
                         "Ordinary Drink", "Cocktail", "Shake"
                         ,"Other/Unknown", "Cocoa", "Shot", "Coffee / Tea"
                         ,"Homemade Liqueur", "Punch / Party Drink", "Beer"
-                        ,"Soft Drink"
+                        ,"Soft Drink", "Random"
                     }));
-
-            DrinkMenu(Requests.Category + category);
+            if (category == "Random") await DrinkMenu(Requests.Random);
+            else await DrinkMenu(Requests.Category + category); 
+            
         }
 
-        private static async void DrinkMenu(string category)
+        private static async Task DrinkMenu(string category)
         {
-            AllDrinks? allDrinks = await API.GetAsync(category);
+            AllDrinks? allDrinks  = await API.GetAsync(category);
             if(allDrinks != null && allDrinks.drinks != null) Console.WriteLine(allDrinks.drinks[0].strDrink);
         }
     }
