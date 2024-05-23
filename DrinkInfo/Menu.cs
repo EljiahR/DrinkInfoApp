@@ -11,17 +11,25 @@ namespace DrinkInfo
     {
         public static void MainMenu()
         {
-            var menu = AnsiConsole.Prompt(
+            var category = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Drink Categories")
                     .PageSize(11)
                     .AddChoices(new[]
                     {
-                        "Ordinary Drink", "Cocktail", "Milk / Float / Shake"
+                        "Ordinary Drink", "Cocktail", "Shake"
                         ,"Other/Unknown", "Cocoa", "Shot", "Coffee / Tea"
                         ,"Homemade Liqueur", "Punch / Party Drink", "Beer"
-                        ,"Soft Drink / Soda"
+                        ,"Soft Drink"
                     }));
+
+            DrinkMenu(Requests.Category + category);
+        }
+
+        private static async void DrinkMenu(string category)
+        {
+            AllDrinks? allDrinks = await API.GetAsync(category);
+            if(allDrinks != null && allDrinks.drinks != null) Console.WriteLine(allDrinks.drinks[0].strDrink);
         }
     }
 }

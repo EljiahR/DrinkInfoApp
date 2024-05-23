@@ -9,5 +9,6 @@ namespace DrinkInfo
     internal class Requests
     {
         public static string Random = "random.php";
+        public static string Category = "filter.php?c=";
     }
 }
