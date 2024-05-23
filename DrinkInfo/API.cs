@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,11 +16,15 @@ namespace DrinkInfo
         };
         public static async Task GetAsync(string apiCall)
         {
-            using HttpResponseMessage response = await client.GetAsync(apiCall);
+            AllDrinks? allDrinks = await client.GetFromJsonAsync<AllDrinks>(apiCall);
+            if(allDrinks == null || allDrinks.drinks == null || allDrinks.drinks.Count == 0)
+            {
+                Console.WriteLine("Drink not found");
+            } else
+            {
+                Console.WriteLine(allDrinks.drinks[0].strDrink + "\n");
+            }
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine(jsonResponse + "\n");
 
         }
 
