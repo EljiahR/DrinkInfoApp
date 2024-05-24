@@ -14,9 +14,15 @@ namespace DrinkInfo
         {
             BaseAddress = new Uri("https://www.thecocktaildb.com/api/json/v1/1/")
         };
-        public static async Task<AllDrinks?> GetAsync(string apiCall)
+        public static async Task<Category?> GetCategoryAsync(string apiCall)
         {
-            return await client.GetFromJsonAsync<AllDrinks>(apiCall);
+            return await client.GetFromJsonAsync<Category>(apiCall);
+        }
+
+        public static async Task<Drink> GetDrinkAsync(string apiCall)
+        {
+            var result = await client.GetFromJsonAsync<Category>(apiCall);
+            return result.drinks[0];
         }
 
 

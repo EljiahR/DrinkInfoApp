@@ -9,6 +9,11 @@ namespace DrinkInfo
 {
     internal class Menu
     {
+        private static readonly List<string> _categories = new List<string> { 
+            "Ordinary Drink", "Cocktail", "Shake"
+            ,"Other / Unknown", "Cocoa", "Shot", "Coffee / Tea"
+            ,"Homemade Liqueur", "Punch / Party Drink", "Beer"
+            ,"Soft Drink", "Random", "Exit"};
         public static async Task MainMenu()
         {
             string? category;
@@ -17,43 +22,57 @@ namespace DrinkInfo
                 category = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Drink Categories")
-                    .PageSize(12)
-                    .AddChoices(new[]
-                    {
-                        "Ordinary Drink", "Cocktail", "Shake"
-                        ,"Other/Unknown", "Cocoa", "Shot", "Coffee / Tea"
-                        ,"Homemade Liqueur", "Punch / Party Drink", "Beer"
-                        ,"Soft Drink", "Random", "Exit"
-                    }));
+                    .PageSize(13)
+                    .AddChoices(_categories));
                 if(category != "Exit")
-                    if (category == "Random") await DrinkMenu(Requests.Random);
-                    else await DrinkMenu(Requests.Category + category);
+                    if (category == "Random") DisplayDrinkInfo(await API.GetDrinkAsync(Requests.Random));
+                    else await DrinkMenu(category);
             } while (category != "Exit");
             Console.WriteLine("Goodbye!");
             
         }
 
-        private static async Task DrinkMenu(string category)
+        private static async Task DrinkMenu(string selectedCategory)
         {
-            AllDrinks? allDrinks  = await API.GetAsync(category);
-            if(allDrinks != null && allDrinks.drinks != null && allDrinks.drinks.Count > 0)
+            Category? category  = await API.GetCategoryAsync(Requests.Category + selectedCategory);
+            if(category != null && category.drinks != null && category.drinks.Count > 0)
             {
-                List<string> drinkList = allDrinks.drinks.Select(drink => drink.strDrink).Where(str => str != null).ToList();
+                List<string> drinkList = category.drinks.Select(drink => drink.strDrink).Where(str => !string.IsNullOrEmpty(str)).ToList(); // .Where() should fix the nullability thing what the hell
                 drinkList.Add("Go back");
-                string? chosenDrink;
+                string? choice;
                 do
                 {
-                    chosenDrink = AnsiConsole.Prompt(
+                    choice = AnsiConsole.Prompt(
                        new SelectionPrompt<string>()
-                           .Title("Drink Categories")
+                           .Title(selectedCategory)
                            .PageSize(10)
                            .AddChoices(drinkList));
-                } while (chosenDrink != "Go back");
+
+                    if (choice != "Go back")
+                    {
+                        Drink chosenDrink = category.drinks.Find(drink => drink.strDrink == choice);
+                        Drink drinkInfo = await API.GetDrinkAsync(Requests.Id + chosenDrink.idDrink);
+                        DisplayDrinkInfo(drinkInfo);
+
+                    }
+                } while (choice != "Go back");
                
             } else
             {
                 Console.WriteLine("No drinks found");
             }
+        }
+
+        private static void DisplayDrinkInfo(Drink drink)
+        {
+            Console.WriteLine(drink.strDrink);
+            foreach(var ingredient in drink.GetIngredients())
+            {
+                Console.WriteLine(ingredient);
+            }
+            Console.ReadLine();
+
+            Console.Clear();
         }
     }
 }

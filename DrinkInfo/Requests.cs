@@ -10,5 +10,6 @@ namespace DrinkInfo
     {
         public static string Random = "random.php";
         public static string Category = "filter.php?c=";
+        public static string Id = "lookup.php?i=";
     }
 }
