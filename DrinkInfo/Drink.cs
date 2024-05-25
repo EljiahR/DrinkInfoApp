@@ -66,13 +66,24 @@ namespace DrinkInfo
 
         public List<string> GetMeasurements()
         {
-            List<string> result = new List<string> {
+            return new List<string> {
                 strMeasure1, strMeasure2, strMeasure3, strMeasure4, strMeasure5
                 ,strMeasure6, strMeasure7, strMeasure8, strMeasure9, strMeasure10
                 ,strMeasure11, strMeasure12, strMeasure13, strMeasure14, strMeasure15 };
-
-            return result.Where(str => !string.IsNullOrEmpty(str)).ToList();
-
         }
+
+        public List<string> GetIngredientsWithMeasurements()
+        {
+            List<string> ingredients = GetIngredients();
+            List<string> measurements = GetMeasurements();
+            List<string> result = new();
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(measurements[i])) result.Add(measurements[i].Trim() + " - " + ingredients[i].Trim());
+                else result.Add(ingredients[i]);
+            }
+            return result;
+        }
+
     }
 }

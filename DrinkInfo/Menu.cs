@@ -65,12 +65,33 @@ namespace DrinkInfo
 
         private static void DisplayDrinkInfo(Drink drink)
         {
-            Console.WriteLine(drink.strDrink);
-            foreach(var ingredient in drink.GetIngredients())
+
+            /*Console.WriteLine(drink.strDrink);
+            foreach(var ingredient in drink.GetIngredientsWithMeasurements())
             {
                 Console.WriteLine(ingredient);
             }
-            Console.ReadLine();
+            */
+
+            var drinkIngredients = new Table();
+            drinkIngredients.Title(drink.strDrink);
+            drinkIngredients.AddColumn("Ingredients");
+            
+            foreach(var ingredient in drink.GetIngredientsWithMeasurements())
+            {
+                drinkIngredients.AddRow(ingredient);
+            }
+
+            AnsiConsole.Write(drinkIngredients);
+            if(!string.IsNullOrEmpty(drink.strInstructions))
+            {
+                var drinkInstructions = new Table();
+                drinkInstructions.AddColumn("Instructions");
+                drinkInstructions.AddRow(drink.strInstructions);
+                AnsiConsole.Write(drinkInstructions);
+            }
+            Console.WriteLine("Press any key to go back...");
+            Console.ReadKey();
 
             Console.Clear();
         }
